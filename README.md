@@ -38,8 +38,8 @@ Results of the StyleGAN2-ADA finetuned on images of art (MetFaces dataset)
 * [ ] add noise to latent vector at every level of projection to include randomness
 * [ ] use W(1,18) instead of W(1) when projecting [link](https://colab.research.google.com/github/woctezuma/stylegan2-projecting-images/blob/master/stylegan2_projecting_images_with_my_fork.ipynb#scrollTo=beAa5YPrdqgs&uniqifier=2) (per-layer latents, better reconstruction control)
 * [ ] take feature from a person? E.g. simple interpolation between faces A and B is always possible. But how can I add A's hair to B? Find a way to extract latent representation of A's hair and add it to B.
-## 📁 Directory structure
 
+## 📁 Directory structure
 | Directory                                     | Description                                       |
 | --------------------------------------------- | ------------------------------------------------- |
 | [conf](conf/)                                 | configuration files                               |
@@ -130,32 +130,31 @@ Connect to a running docker container in the new shell/session:
 docker exec -ti -e COLUMNS="`tput cols`" -e LINES="`tput lines`" <CONTAINER_ID> bash
 ```
 
-## 📝 Notes:
 
-### Commands log
-
-```bash
-python nvidia-stylegan2-ada/train.py --resume ffhq256 --outdir outputs/metfaces-256 --data data/metfaces-aligned/images-256-tfrecords/ --cfg paper256 --batch 8 --aug noaug --gpus=1 --metrics none --kimg 40 --snap 1
-```
-
-```bash
-python nvidia-stylegan2-ada/train.py --resume ffhq256 --outdir outputs/metfaces-256 --data data/metfaces-aligned/images-256-tfrecords/ --cfg paper256 --batch 8 --aug ada --gpus=1 --metrics none --kimg 40 --snap 1
-```
-
-```bash
-python nvidia-stylegan2-ada/train.py --resume ffhq256 --outdir outputs/metfaces-256 --data data/metfaces-aligned/images-256-tfrecords/ --cfg paper256 --batch 8 --aug noaug --gpus=1  --kimg 100 --snap 1 --subset 100;
-```
-
+## 📝 Notes
 
 ### Specs
 
-GPU: Titan XP
+GPU Titan XP
 
 ### Latent space projection
 
-Initial projection in latent space gave very bad results <IMAGE_OF_BAD_PROJECTION>. This happened because the preprocessing of the image was not done in the same way as FFHQ's preprocessing (TODO: describe FFHQ's preprocessing technique). Once the FFHQ's preprocessing was applied the lantet projection was better.
+The method for projecting the image to a latent space
 
-Projection to latent representation takes ~2 minutes (TODO: can we improve this?)
+Let $G_{\theta}:\mathcal{W}\rightarrow \mathbb{R}^{H\times W\times 3}$ be StyleGAN2-ADA generator
+
+Let $x\in\mathbb{R}^{H\times W\times 3}$ be the true image.
+
+Let $\phi(\cdot)$ be the image preprocessing operator (FFHQ-matching, crop, align, normalize)
+
+L2 projection objective (latent inversion):
+$$W^{*} =\underset{W\in\mathcal{W}^{+}}{\arg\min}\; \left\|\, G_{\theta}(W)\;-\;\phi(x)\,\right\|_{2}^{2}.$$
+
+Findings the initial projection without the $\phi(\cdot)$ gave extremely bad results. The projection was not able to capture the facial structure of the image and the output was very blurry and distorted.
+
+After introducing the $\phi(\cdot)$ operator, the projection was able to capture the facial structure and the output was much better.
+
+Projection to latent representation takes ~2 minutes with Adam's optimizer.
 
 ### StyleGAN2 vs StyleGAN2-ADA
 
@@ -183,11 +182,11 @@ Goal: instead of one style vector, try to decompose it to $\mathbf{w_1}$ and $\m
 - intuitively: $\mathbf{w_1}$ is active in the upper blocks and  $\mathbf{w_2}$ in the lower blocks
 - to achieve this, fork MLP into 2 MLPs at the bottom, instead of one vector $w$ now we have two
 - in the generator $g$, introduce scaler $\alpha$ which weighs each style $(1-\alpha) \mathbf{w_1} + (\alpha)\mathbf{w_2}$
-  - layer 1: $\alpha = 0,\quad (1-\alpha) \mathbf{w_1} + (\alpha)\mathbf{w_2} = 1\cdot w_1 + 0 \cdot w_2 $
+  - layer 1: $\alpha = 0,\quad (1-\alpha) \mathbf{w_1} + (\alpha)\mathbf{w_2} = 1\cdot w_1 + 0 \cdot w_2$
   - ...
-  - layer $\frac{n}{2}$: $\alpha = 0.5,\quad (1-\alpha) \mathbf{w_1} + (\alpha)\mathbf{w_2} = \frac{1}{2} \cdot w_1 + \frac{1}{2}\cdot w_2 $
+  - layer $\frac{n}{2}$: $\alpha = 0.5,\quad (1-\alpha) \mathbf{w_1} + (\alpha)\mathbf{w_2} = \frac{1}{2} \cdot w_1 + \frac{1}{2}\cdot w_2$
   - ...
-  - layer $n$: $\alpha = 1,\quad (1-\alpha) \mathbf{w_1} + (\alpha)\mathbf{w_2} = 0 \cdot w_1 + 1\cdot w_2 $
+  - layer $n$: $\alpha = 1,\quad (1-\alpha) \mathbf{w_1} + (\alpha)\mathbf{w_2} = 0 \cdot w_1 + 1\cdot w_2$
 
 ### Mini StyleGAN
 Goal: reimplement StyleGAN arhitecture which generates small images
