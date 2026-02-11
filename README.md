@@ -4,36 +4,40 @@ Results of the StyleGAN2-ADA finetuned on images of art (MetFaces dataset)
 
 ![](report/2023-01-28-00-27.jpg)
 
-## 📋 Todo:
-- [x] write introduction to the problem
-- [x] create a minimal working example pytorch script of torch loading, file loading and file writing
-- [x] add a preprocessing script which does the same preprocessing as FFHQ's method
-- [x] implement custom DCGAN
-  - [x] train on FFHQ dataset
-  - [x] train on Celeba dataset
-  - [x] trian on MetFaces dataset
-- [x] implement custom StyleGAN
-  - [x] train on FFHQ dataset
-  - [x] train on Celeba dataset
-  - [x] trian on MetFaces dataset
-- [x] get minimal working example of projecting the image into latent space (latent space, final image, video of the interpolation between the initial and final image)
-- [x] create script for linear interpolation of two images
-  - [x] add gui slider
-  - [x] add precompute/cache
-- [x] explore latent space in a particular direction, change concrete features (pose, nose...) [link](https://amarsaini.github.io/Epoching-Blog/jupyter/2020/08/10/Latent-Space-Exploration-with-StyleGAN2.html#3.-Interpolation-of-Latent-Codes)
-  - [x] change a particual dimension of W in hope of chaning a specific facial feature (works!)
-  - [x] use trained latent directions (open_mouth, open_eyes...) and generate images new images
-- [x] compare StyleGAN2 and StyleGAN2-ADA
-  - [x] finetune both models on MetFaces (n = 1400)
-  - [x] finetune both models on MetFaces (n = 100)
-  - [x] compare images and FID metric for different kimg step
-- [x] write a full PDF report
-- [x] create a presentation
-- [ ] add noise to latent vector at every level of projection to include randomness
-- [ ] use W(1,18) instead of W(1) when projecting [link](https://colab.research.google.com/github/woctezuma/stylegan2-projecting-images/blob/master/stylegan2_projecting_images_with_my_fork.ipynb#scrollTo=beAa5YPrdqgs&uniqifier=2)
-- [ ] take feature from a person? E.g. simple interpolation between faces A and B is always possible. But how can I add A's hair to B? Find a way to extract latent representation of A's hair and add it to B.
-
-
+## 📋 Log
+* [x] write a problem introduction
+* [x] create a minimal working example pytorch script of torch loading, file loading and file writing (deterministic I/O, reproducible runs)
+* [x] add a preprocessing script which does the same preprocessing as FFHQ's method
+  * [x] aligned crops, consistent normalization
+* [x] implement custom DCGAN
+  * [x] train on FFHQ dataset (baseline quality + sanity checks)
+  * [x] train on Celeba dataset (cross-dataset generalization)
+  * [x] trian on MetFaces dataset (domain shift validation)
+* [x] implement custom StyleGAN (modular blocks, scalable training)
+  * [x] train on FFHQ dataset (high-fidelity reference)
+  * [x] train on Celeba dataset (controlled comparison)
+  * [x] trian on MetFaces dataset (style/domain transfer)
+* [x] get minimal working example of projecting the image into latent space
+  * [x] latent code
+  * [x] final reconstruction
+  * [x] create script for linear interpolation of two images
+  * [ ] video of the interpolation between the initial and final image
+  * [x] add gui slider (interactive latent navigation)
+  * [x] add precompute/cache (responsive UX, avoids recomputation)
+* [x] explore latent space in a particular direction, change concrete features (pose, nose...) [link](https://amarsaini.github.io/Epoching-Blog/jupyter/2020/08/10/Latent-Space-Exploration-with-StyleGAN2.html#3.-Interpolation-of-Latent-Codes)
+  * [x] change a particual dimension of W in hope of chaning a specific facial feature
+    * [x] this actually works!
+  * [x] use trained latent directions (open_mouth, open_eyes...)
+  * [x] generate images new images (semantic control, batch generation)
+* [x] compare StyleGAN2 and StyleGAN2-ADA
+  * [x] finetune both models on MetFaces (n = 1400) (data-rich regime)
+  * [x] finetune both models on MetFaces (n = 100) (low-data stress test)
+  * [x] compare images and FID metric
+* [x] write a full PDF report (methodology, experiments, results, discussion)
+* [x] create a presentation (key findings, visuals, takeaways)
+* [ ] add noise to latent vector at every level of projection to include randomness
+* [ ] use W(1,18) instead of W(1) when projecting [link](https://colab.research.google.com/github/woctezuma/stylegan2-projecting-images/blob/master/stylegan2_projecting_images_with_my_fork.ipynb#scrollTo=beAa5YPrdqgs&uniqifier=2) (per-layer latents, better reconstruction control)
+* [ ] take feature from a person? E.g. simple interpolation between faces A and B is always possible. But how can I add A's hair to B? Find a way to extract latent representation of A's hair and add it to B.
 ## 📁 Directory structure
 
 | Directory                                     | Description                                       |
