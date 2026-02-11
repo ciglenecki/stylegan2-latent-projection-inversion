@@ -30,22 +30,42 @@ def calculate_all_images(G, slider_step, noise_mode, w1, w2):
         all_imgs.append(img_i)
     return np.array(all_imgs)
 
-def calculate_all_images2(G, slider_step, noise_mode, w, feature_num=0):
-    w_max, w_min = w.max(), w.min()
-    num_steps = int(1 / slider_step) + 1
+def calculate_all_images2(G, slider_step, noise_mode, w, min_val, max_val, feature_num=0):
+    num_steps = int((max_val - min_val) / slider_step) + 1
     all_imgs = []
+
+    curr_min = min_val
     for i in tqdm(range(num_steps)):
-        w_i = w[:, :, :]
-        w_i[0, feature_num] = w_min +  i * (w_max - w_min) * slider_step
+        w_i = w.clone()
+        w_i[0, feature_num] = w_i[0, feature_num] + curr_min
         all_imgs.append(calculate_image(G, w_i, noise_mode))
+        curr_min += slider_step
     return np.array(all_imgs)
 
-def setup_figure():
+def calculate_all_images3(G, slider_step, noise_mode, w, min_val, max_val, feature_num_1, feature_num_2):
+    num_steps = int((max_val - min_val) / slider_step) + 1
+    all_imgs = []
+
+    curr_min_outer = min_val
+    for _ in tqdm(range(num_steps)):
+        curr_min_inner = min_val
+        tmp = []
+        for _ in range(num_steps):
+            w_i = w.clone()
+            w_i[0, feature_num_1] = w_i[0, feature_num_1] + curr_min_outer
+            w_i[0, feature_num_2] = w_i[0, feature_num_2] + curr_min_inner
+            tmp.append(calculate_image(G, w_i, noise_mode))
+            curr_min_inner += slider_step
+        curr_min_outer += slider_step
+        all_imgs.append(tmp)
+    return np.array(all_imgs)
+
+def setup_figure(bottom=0.1):
     mpl.rcParams['toolbar'] = 'None'
     fig, ax = plt.subplots()
     fig.canvas.manager.set_window_title('Interpolation demo')
     plt.xticks([])
     plt.yticks([])
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.1)
+    plt.subplots_adjust(bottom=bottom)
     return fig, ax
