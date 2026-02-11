@@ -1,4 +1,4 @@
-# StyleGAN2-ADA project
+# Projecting faces into StyleGAN2-ada's latent space
 
 Results of the StyleGAN2-ADA finetuned on images of art (MetFaces dataset)
 
