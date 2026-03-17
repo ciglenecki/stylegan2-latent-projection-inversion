@@ -6,7 +6,7 @@ Results of the StyleGAN2-ADA finetuned on images of art (MetFaces dataset)
 
 ## 📋 Log
 * [x] write a problem introduction
-* [x] create a minimal working example pytorch script of torch loading, file loading and file writing (deterministic I/O, reproducible runs)
+* [x] create pytorch script of torch loading, file loading and file writing (deterministic I/O, reproducible runs)
 * [x] add a preprocessing script which does the same preprocessing as FFHQ's method
   * [x] aligned crops, consistent normalization
 * [x] implement custom DCGAN
@@ -17,7 +17,7 @@ Results of the StyleGAN2-ADA finetuned on images of art (MetFaces dataset)
   * [x] train on FFHQ dataset (high-fidelity reference)
   * [x] train on Celeba dataset (controlled comparison)
   * [x] trian on MetFaces dataset (style/domain transfer)
-* [x] get minimal working example of projecting the image into latent space
+* [x] create projector of images into latent space
   * [x] latent code
   * [x] final reconstruction
   * [x] create script for linear interpolation of two images
